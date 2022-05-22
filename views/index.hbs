@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{title}}</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" type="text/css" href="/styles/styles.css">
+    <link rel="stylesheet" type="text/css" href="/styles/loader.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined"
+      rel="stylesheet">
+</head>
+<body>
+    {{>header}}
+    {{>sortView }}
+
+    <div class="loader">
+        <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+    </div>
+
+    <div id='films'>
+    </div>
+
+    <script type="text/javascript" src="/js/sorting.js"></script>
+    <script type="text/javascript">
+        
+
+        const films = document.getElementById('films');
+        
+        //let activeType, ascOrDesc, view;
+        const renderSorting = () => {
+            const loader = document.querySelector('.loader');
+            loader.classList.remove('hidden');
+            films.innerHTML = '';
+            localeStorage = getAllItems();
+            const activeType = (localeStorage['sortLabel'])?JSON.parse(localeStorage['sortLabel']):('episode_id');
+            const ascOrDesc = (localeStorage['sortAsc'])?JSON.parse(localeStorage['sortAsc']):('asc');
+            const view = (localeStorage['view'])?JSON.parse(localeStorage['view']):('grid');
+            const favorites = (localeStorage['favorites'])?JSON.parse(localeStorage['favorites']):([]);
+            films.classList = view;
+
+            fetch('https://swapi.py4e.com/api/films/')
+                .then((res)=> res.json())
+                .then((data)=>{
+                    const sorting = sort(data.results, activeType, ascOrDesc);
+                    sorting.map((el, index)=>{
+                        let id = el.url.match(/\d+/g)[1];
+
+                        const div = document.createElement('div');
+                        div.classList = 'bg';
+
+                        const spanStar = document.createElement('span');
+                        spanStar.id = 'star';
+                        spanStar.textContent = 'grade';
+                        spanStar.className = 'material-icons-outlined';
+                        favorites.map(fav=>{
+                            if(fav == id){
+                                spanStar.classList = 'material-icons active';
+                            }
+                        })
+                        //spanStar.classList = favorites.map(fav=>(fav==id)?():(''));
+                        spanStar.addEventListener('click', (e)=>onFavorite(e, id));
+                       
+                        div.innerHTML =`<a href=${`/film/${id}`}>
+                                <div class="film">
+                                    <img src=${`https://starwars-visualguide.com/assets/img/films/${id}.jpg`}>
+                                    <div class='info'>
+                                        <span class="film-name">Episode ${el.episode_id}: ${el.title}</span>
+                                        <div class='dop-info'>
+                                            
+                                            <span>Date Created: ${el.release_date}</span>
+                                            <span>Director: ${el.director}</span>
+                                            <span>Producer(s): ${el.producer}</span>
+                                            <span>Opening Crawl:</br>
+                                            ${el.opening_crawl}</span>
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+                            </a>`
+                        div.prepend(spanStar);
+                        
+                        films.append(div)
+                    });
+                    loader.classList.add('hidden');
+                });
+
+            
+        }
+        renderSorting();
+
+        
+        var favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+        
+        
+
+        const onFavorite = (e, id)=> {
+            //const id = parseInt(e.target.nextElementSibling.href.match(/\d+/g)[1]);
+          var index = favorites.indexOf(parseInt(id));
+          if (index == -1) {
+            favorites.push(parseInt(id));
+            e.target.className = 'material-icons active';
+          } else {
+            favorites.splice(index, 1);
+            e.target.className = 'material-icons-outlined';
+          }
+          setItem('favorites', favorites);
+        }
+
+        
+    </script>
+</body>
+<html>

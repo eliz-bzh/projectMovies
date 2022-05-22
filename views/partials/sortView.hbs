@@ -1,0 +1,76 @@
+<div class='sortView'>
+	<div>
+		<b>Сортировка по:</b>
+		    <span id='sort_label'></span>
+
+		<div class="sort__popup">
+		    <ul>
+			    <li>эпизоду</li>
+			    <li>дате выхода</li>
+		    </ul>
+		</div>
+
+		<span class="material-icons-outlined" style="font-size: inherit;"></span>
+	</div>
+
+	<button class='buttonView bg'><span class="material-icons-outlined">format_list_bulleted</span></button>
+</div>
+
+<script type="text/javascript" src="/js/localeStorage.js"></script>
+<script type="text/javascript">
+
+	const items = [
+	  { name: 'эпизоду', type: 'episode_id' },
+	  { name: 'дате выхода', type: 'release_date' }
+	];
+
+	const li = Array.from(document.querySelectorAll('li'));
+	const sortPopup = document.querySelector('.sort__popup');
+	const label = document.getElementById('sort_label');
+	const arrow = document.querySelector('.material-icons-outlined');
+	const viewButton = document.querySelector('.buttonView');
+
+	let localeStorage = getAllItems();
+	label.textContent = (localeStorage['sortLabel'])?(items.find((obj) => obj.type === JSON.parse(localeStorage['sortLabel'])).name):(items[0].name);
+
+	arrow.textContent = (localeStorage['sortAsc'] && JSON.parse(localeStorage['sortAsc']) === 'desc')?('arrow_downward'):('arrow_upward');
+
+	viewButton.children[0].textContent = (localeStorage['view'] && JSON.parse(localeStorage['view']) === 'list')?('apps'):('format_list_bulleted');
+
+	arrow.addEventListener('click', ()=>{
+		if(arrow.textContent === 'arrow_upward'){
+			arrow.textContent = 'arrow_downward'
+		}else{
+			arrow.textContent = 'arrow_upward'
+		}
+		setItem('sortAsc', (arrow.textContent === 'arrow_upward')?('asc'):('desc'))
+		renderSorting()
+	})
+
+	viewButton.addEventListener('click', ()=>{
+		if(viewButton.children[0].textContent === 'format_list_bulleted'){
+			viewButton.children[0].textContent = 'apps';
+		}else{
+			viewButton.children[0].textContent = 'format_list_bulleted';
+		}
+		const classList = (viewButton.children[0].textContent === 'apps')?('list'):('grid');
+		setItem('view', classList)
+        films.classList = classList;
+	})
+
+	label.addEventListener('click', ()=>{
+		sortPopup.classList.toggle('show');
+	})
+
+	li.map(elLi =>{
+		elLi.addEventListener('click', ()=>{
+			[...elLi.parentElement.children].map(sib=>sib.classList.remove('active'));
+			elLi.classList.add('active');
+			label.textContent = elLi.textContent;
+			setItem('sortLabel', items.find((obj) => obj.name === elLi.textContent).type);
+			sortPopup.classList.toggle('show');
+			renderSorting()
+		})
+	})
+
+</script>

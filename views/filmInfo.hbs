@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>{{data.title}}</title>
+	<meta charset="utf-8" />
+    <link rel="stylesheet" type="text/css" href="/styles/styles.css">
+    <link rel="stylesheet" type="text/css" href="/styles/loader.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined"
+      rel="stylesheet">
+</head>
+<body>
+	{{>header}}
+
+	<div class="film-container bg">
+		<span id='star-{{getIdFromUrl data.url}}' >grade</span>
+		<img src="https://starwars-visualguide.com/assets/img/films/{{getIdFromUrl data.url}}.jpg"/>
+		
+		<div class="film-info">
+			<h3>Episode {{data.episode_id}}: {{data.title}}</h3>
+			<span>Date Created: {{data.release_date}}</span>
+			<span>Director: {{data.director}}</span>
+			<span>Producer(s): {{data.producer}}</span>
+			<span>Opening Crawl:</br>
+			{{{data.opening_crawl}}}</span>
+		</div>
+
+		<div>
+			<h1>Characters</h1>
+			<div class="list-characters">
+				{{#each characters}}
+					<div class="list-element">
+						<img src="{{this.image}}">
+						<a href="{{this.wiki}}"><span>{{this.name}}</span></a>
+					</div>
+				{{/each}}
+			</div>
+			<div class="loader hidden">
+		        <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+		    </div>
+		    <div class="load-more">
+		        <button id="loadmore" class="bg">load more</button>
+		    </div>
+			
+		</div>
+	</div>
+
+
+
+	<script type="text/javascript">
+		const loadmore = document.querySelector('#loadmore');
+	    let elementList = [...document.querySelectorAll('.list-characters .list-element')];
+	    const list = document.querySelector('.list-characters');
+	    const loader = document.querySelector('.loader');
+
+	    //var favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+	    const spanStar = document.querySelector('span[id*="star"]');
+	    const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+	    spanStar.classList=(favorites.indexOf(parseInt(spanStar.id.match(/\d+/g)[0])) === -1) ? "material-icons-outlined" : "material-icons active";
+
+	    /*favorites.map(fav=>{
+            if(fav == id){
+                spanStar.classList = 'material-icons active';
+            }
+        })*/
+
+	    const characters = async() => {
+			let res  = await fetch(`https://swapi.py4e.com/api/films/${window.location.pathname.slice(-1)}`)
+			 //use string literals
+			 let data = await res.json();
+			 return data.characters;
+	    }
+
+	    const getCharacters = async() => {
+		 	let jsonData = await characters();
+		  	return jsonData;
+		}
+
+
+		loadmore.addEventListener('click', async(e) => {
+			loader.classList.remove('hidden');
+	        const newList = await getCharacters();
+
+	        let requests = newList.slice(0, elementList.length + 5).map(url => {
+				let id = url.match(/\d+/g)[1];
+				return fetch(`https://star--wars.herokuapp.com/people/${id}`);
+			});
+
+			await Promise.all(requests)
+			  .then(responses => Promise.all(responses.map(r => r.json())))
+			  .then(users => {
+			  	const html = users.map((el, index)=>{
+                return `
+                    <div class="list-element">
+                        <img src=${el.image}>
+                        <a href="${el.wiki}"><span>${el.name}</span></a>
+                    </div>`;
+	            }).join('');
+	            list.innerHTML = html;
+			  });
+
+			elementList = [...document.querySelectorAll('.list-characters .list-element')];
+	        
+
+	        if (newList.length === elementList.length) {
+	            e.target.parentNode.style.display = 'none';
+	        }
+	        loader.classList.add('hidden');
+	    })
+
+	</script>
+</body>
+</html>
