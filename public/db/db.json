@@ -1,0 +1,24 @@
+{
+  "users": [
+    {
+      "username": "desfarik",
+      "hash": "$2b$10$VQ4FneP0/0g0S4Q0.jo8OOxKnyZnt2HLG3HGY5frfbY4Kr0nx4jJa",
+      "id": "056da00d-ce8e-4078-9201-ca5a76c28b80"
+    },
+    {
+      "username": "desfar",
+      "hash": "$2b$10$jp3MEKcC2oGZyi71tv9bo.EV2GkhG5rE2jUiv/p.EJFwMdWCRWDpm",
+      "id": "3758e70f-0799-4d5c-b7ba-a0e769054ea7"
+    },
+    {
+      "username": "white_zaya",
+      "hash": "$2b$10$bkqA4dipvBn7AxywQnRKeOVhxR9CTllS4ERLUGXY6oG0fnZj2A9ea",
+      "id": "1c7e5032-6ddb-451c-a3ea-440ca8520aab"
+    },
+    {
+      "username": "bozhkova.elizaveta34@gmail.com",
+      "hash": "$2b$10$rO3nnGGX3Yb9qZL.F8vWkuQQ8pKz8Jz4FKXtOodYYn0HiQ3QfWVM2",
+      "id": "1d1af7f9-449a-448d-a19f-20a3122c0582"
+    }
+  ]
+}
