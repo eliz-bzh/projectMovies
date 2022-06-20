@@ -47,7 +47,7 @@
 	</div>
 
 
-
+    <script type="text/javascript" src="/js/localeStorage.js"></script>
 	<script type="text/javascript">
 		const loadmore = document.querySelector('#loadmore');
 	    let elementList = [...document.querySelectorAll('.list-characters .list-element')];
@@ -56,18 +56,11 @@
 
 	    //var favorites = JSON.parse(localStorage.getItem('favorites')) || [];
 	    const spanStar = document.querySelector('span[id*="star"]');
-	    const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+	    var favorites = JSON.parse(localStorage.getItem('favorites')) || [];
 	    spanStar.classList=(favorites.indexOf(parseInt(spanStar.id.match(/\d+/g)[0])) === -1) ? "material-icons-outlined" : "material-icons active";
-
-	    /*favorites.map(fav=>{
-            if(fav == id){
-                spanStar.classList = 'material-icons active';
-            }
-        })*/
 
 	    const characters = async() => {
 			let res  = await fetch(`https://swapi.py4e.com/api/films/${window.location.pathname.slice(-1)}`)
-			 //use string literals
 			 let data = await res.json();
 			 return data.characters;
 	    }
@@ -108,6 +101,21 @@
 	        }
 	        loader.classList.add('hidden');
 	    })
+
+	    spanStar.addEventListener('click', (e)=>onFavorite(e, spanStar.id.match(/\d+/g)[0]))
+        
+
+        const onFavorite = (e, id)=> {
+          var index = favorites.indexOf(parseInt(id));
+          if (index == -1) {
+            favorites.push(parseInt(id));
+            e.target.className = 'material-icons active';
+          } else {
+            favorites.splice(index, 1);
+            e.target.className = 'material-icons-outlined';
+          }
+          setItem('favorites', favorites);
+        }
 
 	</script>
 </body>

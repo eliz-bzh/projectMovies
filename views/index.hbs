@@ -21,13 +21,13 @@
     <div id='films'>
     </div>
 
+    <script type="text/javascript" src="/js/localeStorage.js"></script>
     <script type="text/javascript" src="/js/sorting.js"></script>
     <script type="text/javascript">
         
 
         const films = document.getElementById('films');
-        
-        //let activeType, ascOrDesc, view;
+
         const renderSorting = () => {
             const loader = document.querySelector('.loader');
             loader.classList.remove('hidden');
@@ -52,13 +52,7 @@
                         const spanStar = document.createElement('span');
                         spanStar.id = 'star';
                         spanStar.textContent = 'grade';
-                        spanStar.className = 'material-icons-outlined';
-                        favorites.map(fav=>{
-                            if(fav == id){
-                                spanStar.classList = 'material-icons active';
-                            }
-                        })
-                        //spanStar.classList = favorites.map(fav=>(fav==id)?():(''));
+                        spanStar.classList=(favorites.indexOf(parseInt(id)) === -1) ? "material-icons-outlined" : "material-icons active";
                         spanStar.addEventListener('click', (e)=>onFavorite(e, id));
                        
                         div.innerHTML =`<a href=${`/film/${id}`}>
@@ -95,7 +89,6 @@
         
 
         const onFavorite = (e, id)=> {
-            //const id = parseInt(e.target.nextElementSibling.href.match(/\d+/g)[1]);
           var index = favorites.indexOf(parseInt(id));
           if (index == -1) {
             favorites.push(parseInt(id));
